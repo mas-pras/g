@@ -9,7 +9,10 @@ import logging
 
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
-TOKEN = 'MTEwNTE1NjM4MDA4MTUyODg4Mw.GuiySJ._nIiXHgEvwCowPzgZk74w2AGPla0UCijz6-IDw'
+# Settings:
+TOKEN = 'MTEwNTE1NjM4MDA4MTUyODg4Mw.GuiySJ._nIiXHgEvwCowPzgZk74w2AGPla0UCijz6-IDw'  # DC Token
+SUPPORT_ROLE_ID = 1105158038396080178  # Rollen Id
+TICKET_COMMAND_EXECUTER = 977993035717681252  # User Id
 
 bot = commands.Bot(command_prefix='.', intents=discord.Intents.all())
 
@@ -23,7 +26,7 @@ async def on_ready():
 
 @bot.command()
 async def ticket(ctx):
-    if ctx.author.id == 977993035717681252:
+    if ctx.author.id == TICKET_COMMAND_EXECUTER:
         embed = discord.Embed(title='**Ticket**',
                               description=f'Wenn du ein Ticket erstellen möchtest, drücke einfach die Reaktion: 💼',
                               timestamp=datetime.datetime.utcnow(),
@@ -43,6 +46,7 @@ async def on_raw_reaction_add(payload):
         guild = bot.get_guild(payload.guild_id)
         channel = guild.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
+        await message.remove_reaction(payload.emoji, payload.member)
 
         # Überprüft, ob der Kanal bereits existiert
         for c in guild.channels:
@@ -51,7 +55,6 @@ async def on_raw_reaction_add(payload):
                 return await payload.member.send('Du hast bereits ein Ticket offen.')
 
         # Erstelle das Support-Ticket
-        SUPPORT_ROLE_ID = 1105158038396080178
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False),
